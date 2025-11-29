@@ -1,0 +1,153 @@
+#include <stdio.h>
+#define MAX 5
+
+int queue[MAX];
+int front = -1;
+int rear = -1;
+
+int isEmpty() {
+    if (front == -1 && rear == -1)
+        return 1;
+    else
+        return 0;
+}
+
+int isFull() {
+    if ((rear + 1) % MAX == front)
+        return 1;
+    else
+        return 0;
+}
+
+void enqueue(int item) {
+    if (isFull()) {
+        printf("Queue Overflow\n");
+        return;
+    } else if (isEmpty()) {
+        front = 0;
+        rear = 0;
+    } else {
+        rear = (rear + 1) % MAX;
+    }
+    queue[rear] = item;
+    printf("%d enqueued.\n", item);
+}
+
+void dequeue() {
+    int x;
+    if (isEmpty()) {
+        printf("Queue Underflow\n");
+        return;
+    } else if (front == rear) {
+        x = queue[front];
+        front = -1;
+        rear = -1;
+    } else {
+        x = queue[front];
+        front = (front + 1) % MAX;
+    }
+    printf("Deleted item is %d\n", x);
+}
+
+void display() {
+    if (isEmpty()) {
+        printf("Queue is empty\n");
+        return;
+    }
+    int count = (rear + MAX - front) % MAX + 1;
+    printf("Queue elements: ");
+    for (int i = 0; i < count; i++) {
+        int j = (front + i) % MAX;
+        printf("%d ", queue[j]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int choice, value;
+    while (1) {
+        printf("\n--- Circular Queue Menu ---\n");
+        printf("1. Enqueue\n");
+        printf("2. Dequeue\n");
+        printf("3. Display\n");
+        printf("4. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                enqueue(value);
+                break;
+            case 2:
+                dequeue();
+                break;
+            case 3:
+                display();
+                break;
+            case 4:
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
+
+
+/*TEST CASES — CIRCULAR QUEUE (ARRAY, MAX = 5)
+--------------------------------------------
+
+1) Insert into empty queue
+Input: Enqueue(10)
+Output: 10 enqueued.
+Final Queue: {10}
+
+2) Insert multiple elements
+Input: Enqueue(5), Enqueue(15), Enqueue(25)
+Output: 5 enqueued., 15 enqueued., 25 enqueued.
+Final Queue: {5,15,25}
+
+3) Insert until queue is full
+Input: Enqueue(1), Enqueue(2), Enqueue(3), Enqueue(4)
+Output: 1 enqueued., 2 enqueued., 3 enqueued., 4 enqueued.
+Final Queue: {1,2,3,4}   (If MAX=5, one slot left; adjust if your MAX differs)
+
+4) Insert into full queue (Overflow)
+Input: Enqueue(10), Enqueue(20), Enqueue(30), Enqueue(40), Enqueue(50)
+Output: 10 enqueued., 20 enqueued., 30 enqueued., 40 enqueued., Queue Overflow
+Final Queue: {10,20,30,40}
+
+5) Insert after removing elements (wrap-around reuse)
+Input: Enqueue(10), Enqueue(20), Enqueue(30), Enqueue(40), Dequeue(), Dequeue(), Enqueue(50), Enqueue(60)
+Output: 10 enq., 20 enq., 30 enq., 40 enq., Deleted 10, Deleted 20, 50 enq., 60 enq.
+Final Queue: {30,40,50,60}  (slots reused via modulo)
+
+6) Delete from queue with one element
+Input: Enqueue(77), Dequeue()
+Output: 77 enqueued., Deleted item is 77
+Final Queue: Empty
+
+7) Delete multiple elements
+Input: Enqueue(9), Enqueue(8), Enqueue(7), Enqueue(6), Dequeue(), Dequeue(), Dequeue()
+Output: 9 enq., 8 enq., 7 enq., 6 enq., Deleted item is 9, Deleted item is 8, Deleted item is 7
+Final Queue: {6}
+
+8) Delete until queue is empty
+Input: Enqueue(33), Enqueue(44), Dequeue(), Dequeue()
+Output: 33 enq., 44 enq., Deleted item is 33, Deleted item is 44
+Final Queue: Empty
+
+9) Delete from empty queue (Underflow)
+Input: Dequeue()
+Output: Queue Underflow
+Final Queue: Empty
+
+10) Delete after inserting elements (mix operations)
+Input: Enqueue(10), Enqueue(20), Dequeue(), Enqueue(30), Enqueue(40), Dequeue(), Enqueue(50)
+Output: 10 enq., 20 enq., Deleted item is 10, 30 enq., 40 enq., Deleted item is 20, 50 enq.
+Final Queue: {30,40,50}
+
+
+
+*/
